@@ -1,7 +1,10 @@
 import sys
 import os
+from datetime import datetime
 from form import *
-from PyQt5 import QtWidgets, QtCore, QtGui
+from PyQt5 import QtWidgets
+from PyQt5.QtCore import QTimer
+from PyQt5.QtWidgets import QMessageBox
 
 os.environ.pop("GTK_PATH", None)
 os.environ.pop("GIO_MODULE_DIR", None)
@@ -17,7 +20,39 @@ class MyWin(QtWidgets.QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self.ui.actionExit.triggered.connect(self.exit_func)
+        self.ui.actionAbout.triggered.connect(self.show_about)
+        self.ui.pushButton_time.hide()
+        self.ui.pushButton_date.hide()
+        self.ui.pushButton_time.clicked.connect(self.time_func)
+        self.ui.pushButton_date.clicked.connect(self.date_func)
 
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(self.ui.pushButton_time.click)
+        self.timer.timeout.connect(self.ui.pushButton_date.click)
+        self.timer.start(1000)
+        
+            
+
+
+    def time_func(self):
+        now_time = datetime.now()
+        time_text = f"{now_time.strftime("%H:%M:%S")}"
+        self.ui.label.setText(time_text)
+
+
+    def date_func(self):
+        now_date = datetime.now()
+        date_text = f"{now_date.strftime("%d.%m.%Y")}"
+        self.ui.label_4.setText(date_text)
+
+    def show_about(self):
+        QMessageBox.about(self,
+            "About", 
+            "<h3>Clock v1.0</h3>"
+            "<p>The program displays the current date and time.</p>"
+            "<p>Developer: Tarantool</p>"
+            "<p>2026</p>"             
+        )
 
     def exit_func(self):
         exit()
