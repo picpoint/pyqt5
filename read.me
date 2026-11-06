@@ -1,0 +1,35 @@
+упаковка в deb пакет
+
+# Создаем структуру каталогов
+mkdir -p myclock_pkg/usr/bin
+mkdir -p myclock_pkg/usr/share/applications
+mkdir -p myclock_pkg/usr/share/icons/hicolor/48x48/apps
+
+# Копируем ваши файлы (предполагаем, что вы находитесь в папке проекта)
+cp main.py form.py myclock_pkg/usr/bin/
+# Если есть иконка, скопируйте её (замените icon.png на имя вашего файла)
+# cp icon.png myclock_pkg/usr/share/icons/hicolor/48x48/apps/myclock.png
+
+
+Создайте файл myclock_pkg/usr/share/applications/myclock.desktop со следующим содержимым (замените myclock на желаемое имя):
+[Desktop Entry]
+Name=My Clock
+Comment=Displays current date and time
+Exec=myclock
+Icon=myclock
+Terminal=false
+Type=Application
+Categories=Utility;
+
+
+fpm -s dir -t deb -n myclock -v 1.0.0 \
+    --description "A simple PyQt5 clock application" \
+    --maintainer "Tarantool" \
+    --depends "python3-pyqt5" \
+    --depends "python3" \
+    -C myclock_pkg \
+    usr/bin \
+    usr/share/applications \
+    usr/share/icons
+
+
