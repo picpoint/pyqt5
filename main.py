@@ -14,7 +14,7 @@ if sys.platform.startswith("linux"):
 
 lower_letters = 'abcdefghijklmnopqrstuvwxyz'
 numbers = '1234567890'
-spechial_symbols = '!@#$%^&*().?' 
+spechial_symbols = '!@#$%^&*()_-+=[]:;<>,.?' 
 
 
 class MyWin(QtWidgets.QMainWindow):
@@ -40,14 +40,29 @@ class MyWin(QtWidgets.QMainWindow):
                 res_number += rand_from_numbers
             full_result = res_number
             self.ui.lineEdit.setText(full_result)
+            self.ui.label_msg.setText("")
         elif self.ui.checkBox_numbers.isChecked() == False and self.ui.checkBox_lowletter.isChecked() == True and self.ui.checkBox_upletter.isChecked() == False and self.ui.checkBox_specsymbol.isChecked() == False:
             res_lowletter = ""
             for i in range(1, spin + 1):
                 rand_from_lowletter = random.choice(lower_letters)
                 res_lowletter += rand_from_lowletter
             full_result = res_lowletter
-            self.ui.lineEdit.setText(full_result) 
-        
+            self.ui.lineEdit.setText(full_result)
+            self.ui.label_msg.setText("")
+        elif self.ui.checkBox_numbers.isChecked() == False and self.ui.checkBox_lowletter.isChecked() == False and self.ui.checkBox_upletter.isChecked() == True and self.ui.checkBox_specsymbol.isChecked() == False:
+            res = ""
+            for i in range(1, spin + 1):
+                rand_for_upletter = random.choice(lower_letters).upper()
+                res += rand_for_upletter
+            self.ui.lineEdit.setText(res)
+            self.ui.label_msg.setText("")
+        elif self.ui.checkBox_numbers.isChecked() == False and self.ui.checkBox_lowletter.isChecked() == False and self.ui.checkBox_upletter.isChecked() == False and self.ui.checkBox_specsymbol.isChecked() == True:
+            res = ""
+            for i in range(1, spin + 1):
+                rand_for_specsymbol = random.choice(spechial_symbols)
+                res += rand_for_specsymbol
+            self.ui.lineEdit.setText(res)
+            self.ui.label_msg.setText("")
         else:
             # spin = self.ui.spinBox.value()
             # if self.ui.checkBox_numbers.isChecked():
