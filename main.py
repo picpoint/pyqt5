@@ -38,7 +38,10 @@ class MyWin(QtWidgets.QMainWindow):
             for i in range(1, spin + 1):
                 rand_from_numbers = random.choice(numbers)
                 res_number += rand_from_numbers
-            full_result = res_number
+            some_result_numb = res_number
+            lst_res = list(some_result_numb)
+            random.shuffle(lst_res)
+            full_result = ''.join(lst_res)
             self.ui.lineEdit.setText(full_result)
             self.ui.label_msg.setText("")
         elif self.ui.checkBox_numbers.isChecked() == False and self.ui.checkBox_lowletter.isChecked() == True and self.ui.checkBox_upletter.isChecked() == False and self.ui.checkBox_specsymbol.isChecked() == False:
@@ -46,7 +49,10 @@ class MyWin(QtWidgets.QMainWindow):
             for i in range(1, spin + 1):
                 rand_from_lowletter = random.choice(lower_letters)
                 res_lowletter += rand_from_lowletter
-            full_result = res_lowletter
+            some_result_lowercase = res_lowletter
+            lst_res = list(some_result_lowercase)
+            random.shuffle(lst_res)
+            full_result = ''.join(lst_res)
             self.ui.lineEdit.setText(full_result)
             self.ui.label_msg.setText("")
         elif self.ui.checkBox_numbers.isChecked() == False and self.ui.checkBox_lowletter.isChecked() == False and self.ui.checkBox_upletter.isChecked() == True and self.ui.checkBox_specsymbol.isChecked() == False:
@@ -54,14 +60,20 @@ class MyWin(QtWidgets.QMainWindow):
             for i in range(1, spin + 1):
                 rand_for_upletter = random.choice(lower_letters).upper()
                 res += rand_for_upletter
-            self.ui.lineEdit.setText(res)
+            some_result_upercase = list(res)
+            random.shuffle(some_result_upercase)
+            full_result = ''.join(some_result_upercase)
+            self.ui.lineEdit.setText(full_result)
             self.ui.label_msg.setText("")
         elif self.ui.checkBox_numbers.isChecked() == False and self.ui.checkBox_lowletter.isChecked() == False and self.ui.checkBox_upletter.isChecked() == False and self.ui.checkBox_specsymbol.isChecked() == True:
             res = ""
             for i in range(1, spin + 1):
                 rand_for_specsymbol = random.choice(spechial_symbols)
                 res += rand_for_specsymbol
-            self.ui.lineEdit.setText(res)
+            some_result_spec = list(res)
+            random.shuffle(some_result_spec)
+            full_result = ''.join(some_result_spec)
+            self.ui.lineEdit.setText(full_result)
             self.ui.label_msg.setText("")
         else:
             # spin = self.ui.spinBox.value()
