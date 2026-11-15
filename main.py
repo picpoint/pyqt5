@@ -33,6 +33,7 @@ class MyWin(QtWidgets.QMainWindow):
         
         if self.ui.checkBox_numbers.isChecked() == False and self.ui.checkBox_lowletter.isChecked() == False and self.ui.checkBox_upletter.isChecked() == False and self.ui.checkBox_specsymbol.isChecked() == False:
             self.ui.label_msg.setText("No items selected :-( ")
+            self.ui.lineEdit.setText("")
         elif self.ui.checkBox_numbers.isChecked() == True and self.ui.checkBox_lowletter.isChecked() == False and self.ui.checkBox_upletter.isChecked() == False and self.ui.checkBox_specsymbol.isChecked() == False:
             res_number = ""
             for i in range(1, spin + 1):
@@ -76,23 +77,27 @@ class MyWin(QtWidgets.QMainWindow):
             self.ui.lineEdit.setText(full_result)
             self.ui.label_msg.setText("")
         else:
-            # spin = self.ui.spinBox.value()
-            # if self.ui.checkBox_numbers.isChecked():
-
-            # print(f"Number ->", self.ui.checkBox_numbers.isChecked())
-            # print(f"SpecSymbol ->", self.ui.checkBox_specsymbol.isChecked())        
-            # print(f"Uppercase ->", self.ui.checkBox_upletter.isChecked())
-            # print(f"Lowercase ->", self.ui.checkBox_lowletter.isChecked())
-            # print(f"SPINBOX ->", self.ui.spinBox.value())
-            print("="*30)
+            full_pass = ""
+            result_pass = ""
             self.ui.label_msg.setText("")
-            rand_from_lowletters = random.choice(lower_letters)
-            rand_from_upletters = random.choice(lower_letters).upper()
-            rand_from_numbers = random.choice(numbers)
-            rand_from_specsymbol = random.choice(spechial_symbols)           
-            res = rand_from_lowletters + "" + rand_from_upletters + "" + rand_from_numbers + "" + rand_from_specsymbol
-            self.ui.lineEdit.setText(res)
-    
+            for i in range(1, spin + 1):
+                if self.ui.checkBox_numbers.isChecked() == True:
+                    rnd_from_numbs = random.choice(numbers)
+                    full_pass += rnd_from_numbs
+                if self.ui.checkBox_lowletter.isChecked() == True:
+                    rnd_from_lowlet = random.choice(lower_letters)
+                    full_pass += rnd_from_lowlet
+                if self.ui.checkBox_upletter.isChecked() == True:
+                    rnd_from_uplet = random.choice(lower_letters).upper()
+                    full_pass += rnd_from_uplet
+                if self.ui.checkBox_specsymbol.isChecked() == True:
+                    rnd_from_specsymb = random.choice(spechial_symbols)
+                    full_pass += rnd_from_specsymb
+            for i in range(1, spin + 1):
+                result_pass += random.choice(full_pass)
+            self.ui.lineEdit.setText(result_pass)
+
+               
     
     def about_func(self):
         QMessageBox.about(self,
