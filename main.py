@@ -1,10 +1,10 @@
 import sys
 import os
-import random
+import subprocess
 from datetime import datetime
-from passgen_tarantool import *
+from rdc_tarantool import *
 from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QMessageBox
+from PyQt5.QtWidgets import QFileDialog
 
 os.environ.pop("GTK_PATH", None)
 os.environ.pop("GIO_MODULE_DIR", None)
@@ -12,103 +12,34 @@ os.environ.pop("GIO_MODULE_DIR", None)
 if sys.platform.startswith("linux"):
     os.environ["QT_QPA_PLATFORM"] = "xcb"
 
-lower_letters = 'abcdefghijklmnopqrstuvwxyz'
-numbers = '1234567890'
-spechial_symbols = '!@#$%^&*()_-+=[]:;<>,.?' 
 
 
 class MyWin(QtWidgets.QMainWindow):
+    count = 0
     def __init__(self, parent = None):
         QtWidgets.QWidget.__init__(self, parent)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-        self.ui.actionExit.triggered.connect(self.exit_func)
-        self.ui.pushButton.clicked.connect(self.check_status)
-        self.ui.actionAbout.triggered.connect(self.about_func)
-        
-
-    def check_status(self):
-        full_result = ""
-        spin = self.ui.spinBox.value()        
-        
-        if self.ui.checkBox_numbers.isChecked() == False and self.ui.checkBox_lowletter.isChecked() == False and self.ui.checkBox_upletter.isChecked() == False and self.ui.checkBox_specsymbol.isChecked() == False:
-            self.ui.label_msg.setText("No items selected :-( ")
-            self.ui.lineEdit.setText("")
-        elif self.ui.checkBox_numbers.isChecked() == True and self.ui.checkBox_lowletter.isChecked() == False and self.ui.checkBox_upletter.isChecked() == False and self.ui.checkBox_specsymbol.isChecked() == False:
-            res_number = ""
-            for i in range(1, spin + 1):
-                rand_from_numbers = random.choice(numbers)
-                res_number += rand_from_numbers
-            some_result_numb = res_number
-            lst_res = list(some_result_numb)
-            random.shuffle(lst_res)
-            full_result = ''.join(lst_res)
-            self.ui.lineEdit.setText(full_result)
-            self.ui.label_msg.setText("")
-        elif self.ui.checkBox_numbers.isChecked() == False and self.ui.checkBox_lowletter.isChecked() == True and self.ui.checkBox_upletter.isChecked() == False and self.ui.checkBox_specsymbol.isChecked() == False:
-            res_lowletter = ""
-            for i in range(1, spin + 1):
-                rand_from_lowletter = random.choice(lower_letters)
-                res_lowletter += rand_from_lowletter
-            some_result_lowercase = res_lowletter
-            lst_res = list(some_result_lowercase)
-            random.shuffle(lst_res)
-            full_result = ''.join(lst_res)
-            self.ui.lineEdit.setText(full_result)
-            self.ui.label_msg.setText("")
-        elif self.ui.checkBox_numbers.isChecked() == False and self.ui.checkBox_lowletter.isChecked() == False and self.ui.checkBox_upletter.isChecked() == True and self.ui.checkBox_specsymbol.isChecked() == False:
-            res = ""
-            for i in range(1, spin + 1):
-                rand_for_upletter = random.choice(lower_letters).upper()
-                res += rand_for_upletter
-            some_result_upercase = list(res)
-            random.shuffle(some_result_upercase)
-            full_result = ''.join(some_result_upercase)
-            self.ui.lineEdit.setText(full_result)
-            self.ui.label_msg.setText("")
-        elif self.ui.checkBox_numbers.isChecked() == False and self.ui.checkBox_lowletter.isChecked() == False and self.ui.checkBox_upletter.isChecked() == False and self.ui.checkBox_specsymbol.isChecked() == True:
-            res = ""
-            for i in range(1, spin + 1):
-                rand_for_specsymbol = random.choice(spechial_symbols)
-                res += rand_for_specsymbol
-            some_result_spec = list(res)
-            random.shuffle(some_result_spec)
-            full_result = ''.join(some_result_spec)
-            self.ui.lineEdit.setText(full_result)
-            self.ui.label_msg.setText("")
-        else:
-            full_pass = ""
-            result_pass = ""
-            self.ui.label_msg.setText("")
-            for i in range(1, spin + 1):
-                if self.ui.checkBox_numbers.isChecked() == True:
-                    rnd_from_numbs = random.choice(numbers)
-                    full_pass += rnd_from_numbs
-                if self.ui.checkBox_lowletter.isChecked() == True:
-                    rnd_from_lowlet = random.choice(lower_letters)
-                    full_pass += rnd_from_lowlet
-                if self.ui.checkBox_upletter.isChecked() == True:
-                    rnd_from_uplet = random.choice(lower_letters).upper()
-                    full_pass += rnd_from_uplet
-                if self.ui.checkBox_specsymbol.isChecked() == True:
-                    rnd_from_specsymb = random.choice(spechial_symbols)
-                    full_pass += rnd_from_specsymb
-            for i in range(1, spin + 1):
-                result_pass += random.choice(full_pass)
-            self.ui.lineEdit.setText(result_pass)
-
-               
-    
-    def about_func(self):
-        QMessageBox.about(self,
-            "About", 
-            "<h3>Password generate v1.0</h3>"
-            "<p>The program generates passwords.</p>"
-            "<p>Developer: Tarantool</p>"
-            "<p>2026</p>"       
-        )
+        self.ui.actionExit_2.triggered.connect(self.exit_func)
+        self.ui.pushButton.clicked.connect(self.show_devices)
+        self.ui.pushButton_2.clicked.connect(self.open_file)
 
 
+    def show_devices(self):
+        show_dev = subprocess.run(["lsblk", "-o", "NAME,SIZE,TYPE,MOUNTPOINTS"], capture_output=True, text=True)
+        # print(show_dev.stdout)
+        lst_devs = show_dev.stdout.splitlines()
+        for dv in lst_devs:
+            self.ui.listWidget.addItem(dv)
+
+       
+    def open_file(self):
+        file_path, _ = QFileDialog.getOpenFileName(self, "Выберите файл", "", "Все файлы (*);;Текстовые файлы (*.txt)")
+        if file_path:
+            print("Выбранный файл", file_path)
+            self.ui.lineEdit.setText(file_path)
+
+   
     def exit_func(self):
         exit()
 
