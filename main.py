@@ -4,7 +4,7 @@ import subprocess
 from datetime import datetime
 from rdc_tarantool import *
 from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QFileDialog
+# from PyQt5.QtWidgets import QFileDialog, QListWidget
 
 os.environ.pop("GTK_PATH", None)
 os.environ.pop("GIO_MODULE_DIR", None)
@@ -16,16 +16,19 @@ if sys.platform.startswith("linux"):
 
 class MyWin(QtWidgets.QMainWindow):
     count = 0
+    selected_text = ""
     def __init__(self, parent = None):
         QtWidgets.QWidget.__init__(self, parent)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self.ui.actionExit_2.triggered.connect(self.exit_func)
-        self.ui.pushButton.clicked.connect(self.show_devices)
-        self.ui.pushButton_2.clicked.connect(self.open_file)
+        self.ui.pushButton.clicked.connect(self.show_devices_func)
+        self.ui.listWidget.itemClicked.connect(self.item_select_func)
+        self.ui.pushButton_start.clicked.connect(self.make_iso_func)
 
-
-    def show_devices(self):
+   
+    def show_devices_func(self):
+        self.ui.listWidget.clear()
         show_dev = subprocess.run(["lsblk", "-o", "NAME,SIZE,TYPE,MOUNTPOINTS"], capture_output=True, text=True)
         # print(show_dev.stdout)
         lst_devs = show_dev.stdout.splitlines()
@@ -33,11 +36,16 @@ class MyWin(QtWidgets.QMainWindow):
             self.ui.listWidget.addItem(dv)
 
        
-    def open_file(self):
-        file_path, _ = QFileDialog.getOpenFileName(self, "Выберите файл", "", "Все файлы (*);;Текстовые файлы (*.txt)")
-        if file_path:
-            print("Выбранный файл", file_path)
-            self.ui.lineEdit.setText(file_path)
+    def item_select_func(self, item):
+        self.selected_text = item.text()
+        print("select", self.selected_text)
+
+    
+    def make_iso_func(self):
+        # dd if=/dev/cdrom of=image.iso
+        result = subprocess.run(['dd', 'if=/dev/sda2', 'of=image.iso'], capture_output=True, text=True, check=True)
+        print(f"Code of return: {result.returncode}")
+        print(f"Result {result.stdout}")
 
    
     def exit_func(self):
