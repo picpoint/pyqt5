@@ -25,6 +25,7 @@ class MyWin(QtWidgets.QMainWindow):
         self.ui.pushButton.clicked.connect(self.show_devices_func)
         self.ui.listWidget.itemClicked.connect(self.item_select_func)
         self.ui.pushButton_start.clicked.connect(self.make_iso_func)
+        self.ui.pushButton_exit.clicked.connect(self.exit_func)
 
    
     def show_devices_func(self):
@@ -38,14 +39,17 @@ class MyWin(QtWidgets.QMainWindow):
        
     def item_select_func(self, item):
         self.selected_text = item.text()
-        print("select", self.selected_text)
+        device = self.selected_text
+        print(list(device))
+        # print("select", self.selected_text)
 
     
     def make_iso_func(self):
         # dd if=/dev/cdrom of=image.iso
-        result = subprocess.run(['dd', 'if=/dev/sda2', 'of=image.iso'], capture_output=True, text=True, check=True)
+        result = subprocess.run(['dd', 'if=/dev/sdd', 'of=sdd_image.iso', 'status=progress'], capture_output=True, text=True, check=True)
         print(f"Code of return: {result.returncode}")
         print(f"Result {result.stdout}")
+        print(f"ERR: {result.stderr}")
 
    
     def exit_func(self):
