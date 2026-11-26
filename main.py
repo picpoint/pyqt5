@@ -17,6 +17,7 @@ if sys.platform.startswith("linux"):
 class MyWin(QtWidgets.QMainWindow):
     count = 0
     selected_text = ""
+    device = ""
     def __init__(self, parent = None):
         QtWidgets.QWidget.__init__(self, parent)
         self.ui = Ui_MainWindow()
@@ -38,15 +39,21 @@ class MyWin(QtWidgets.QMainWindow):
 
        
     def item_select_func(self, item):
+        self.device = ""
         self.selected_text = item.text()
-        device = self.selected_text
-        print(list(device))
-        # print("select", self.selected_text)
+        dev_txt = self.selected_text
+        res = dev_txt.split(" ")
+        raw_str = res[0]
+        for i in raw_str:
+            if i.isalnum():
+                self.device += i
+        print(self.device)       
 
     
     def make_iso_func(self):
+        # device = self.item_select_func(self)
         # dd if=/dev/cdrom of=image.iso
-        result = subprocess.run(['dd', 'if=/dev/sdd', 'of=sdd_image.iso', 'status=progress'], capture_output=True, text=True, check=True)
+        result = subprocess.run(['dd', f'if=/dev/{self.device}', f'of={self.device}_image.iso', 'status=progress'], capture_output=True, text=True, check=True)
         print(f"Code of return: {result.returncode}")
         print(f"Result {result.stdout}")
         print(f"ERR: {result.stderr}")
