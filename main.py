@@ -27,6 +27,7 @@ class MyWin(QtWidgets.QMainWindow):
         self.ui.listWidget.itemClicked.connect(self.item_select_func)
         self.ui.pushButton_start.clicked.connect(self.make_iso_func)
         self.ui.pushButton_exit.clicked.connect(self.exit_func)
+        self.ui.pushButton_umount.clicked.connect(self.umount_device_func)
 
    
     def show_devices_func(self):
@@ -47,16 +48,24 @@ class MyWin(QtWidgets.QMainWindow):
         for i in raw_str:
             if i.isalnum():
                 self.device += i
-        print(self.device)       
+        print(self.device)
+        self.ui.label1.setText("Attention!")
+        self.ui.label2.setText("The device will be automatically unmounted before the image is created.")       
 
     
     def make_iso_func(self):
         # device = self.item_select_func(self)
         # dd if=/dev/cdrom of=image.iso
         result = subprocess.run(['dd', f'if=/dev/{self.device}', f'of={self.device}_image.iso', 'status=progress'], capture_output=True, text=True, check=True)
+                
         print(f"Code of return: {result.returncode}")
         print(f"Result {result.stdout}")
         print(f"ERR: {result.stderr}")
+
+    def umount_device_func(self):
+        res = subprocess.run(['sudo', 'umount', f'/dev/{self.device}'])
+        print(f"Result {res.returncode}")
+        print(f"ERR: {res.stderr}")
 
    
     def exit_func(self):
