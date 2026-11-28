@@ -4,8 +4,7 @@ import subprocess
 from datetime import datetime
 from rdc_tarantool import *
 from PyQt5 import QtWidgets
-# from PyQt5.QtWidgets import QFileDialog, QListWidget
-
+from PyQt5.QtCore import QProcess
 os.environ.pop("GTK_PATH", None)
 os.environ.pop("GIO_MODULE_DIR", None)
 
@@ -54,18 +53,47 @@ class MyWin(QtWidgets.QMainWindow):
 
     
     def make_iso_func(self):
+        self.process = QProcess(self)
+        self.process.finished.connect(self.on_dd_finished)
+        program = 'sudo'
+        arguments = [
+            'dd',
+            f'if=/dev/{self.device}',
+            f'of={self.device}_image.iso',
+            'status=progress'
+        ]
+        self.process.start(program, arguments)
+        print('dd is started in background')
+
         # device = self.item_select_func(self)
         # dd if=/dev/cdrom of=image.iso
-        result = subprocess.run(['dd', f'if=/dev/{self.device}', f'of={self.device}_image.iso', 'status=progress'], capture_output=True, text=True, check=True)
-                
-        print(f"Code of return: {result.returncode}")
-        print(f"Result {result.stdout}")
-        print(f"ERR: {result.stderr}")
+        # result = subprocess.run(['sudo', 'dd', f'if=/dev/{self.device}', f'of={self.device}_image.iso', 'status=progress'], capture_output=True, text=True, check=True)                
+        # print(f"Code of return: {result.returncode}")
+        # print(f"Result {result.stdout}")
+        # print(f"ERR: {result.stderr}")
+
+    def on_dd_finished(self, exit_code, exit_status):
+        print(f"dd is fiinished {exit_code}")
+        stdout = self.process.readAllStandardOutput().data().decode()
+        stderr = self.process.readAllStandardError().data().decode()
+
+        if exit_code == 0:
+            print(f"programm is OK: {stdout}")
+        else:
+            print(f"dd is ERR: {stderr}")
+
 
     def umount_device_func(self):
-        res = subprocess.run(['sudo', 'umount', f'/dev/{self.device}'])
-        print(f"Result {res.returncode}")
-        print(f"ERR: {res.stderr}")
+        self.process = QProcess(self)
+        program = 'sudo'
+        arguments = [
+            'umount',
+            f'/dev/{self.device}'
+        ]
+        self.process.start(program, arguments)
+        # res = subprocess.run(['pkexec', 'umount', f'/dev/{self.device}'])
+        # print(f"Result {res.returncode}")
+        # print(f"ERR: {res.stderr}")
 
    
     def exit_func(self):
